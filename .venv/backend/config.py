@@ -1,8 +1,8 @@
 # config.py
 
 # Flask configuration
-SECRET_KEY = 'your-secret-key'
-JWT_SECRET_KEY = 'your-jwt-secret-key'
+SECRET_KEY = 'ns1mHmxT2HJ2eE4ubhkXxgswmB/711m2u7KeuTmbu5c='
+JWT_SECRET_KEY = 'bNHMCybvW6NJdT+uxXaprT76/RFOp6RX5r93pcRQ+Pk='
 SQLALCHEMY_DATABASE_URI = 'sqlite:///movers.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
