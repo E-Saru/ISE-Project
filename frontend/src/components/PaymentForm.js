@@ -1,38 +1,52 @@
+// // src/components/PaymentForm.js
 // import React from 'react';
-// import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-// import { processPayment } from '../api';
+// import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+
+// // Your PayPal client ID
+// const PAYPAL_CLIENT_ID = 'AbS4ilAHZC7R97S_E1wKuJl7XpgYI7sNln9srjpQSUaAkTtu4dA3soRdWICuHbsalROz4dkWbT21m93U';
 
 // const PaymentForm = () => {
-//     const stripe = useStripe();
-//     const elements = useElements();
-
-//     const handleSubmit = async (event) => {
-//         event.preventDefault();
-//         const cardElement = elements.getElement(CardElement);
-
-//         try {
-//             const { paymentMethod } = await stripe.createPaymentMethod({
-//                 type: 'card',
-//                 card: cardElement,
+//   return (
+//     <div>
+//       <h2>Pay with PayPal</h2>
+//       <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID }}>
+//         <PayPalButtons
+//           createOrder={(data, actions) => {
+//             return fetch('http://localhost:5000/api/pay', {
+//               method: 'POST',
+//               headers: {
+//                 'Content-Type': 'application/json',
+//               },
+//               body: JSON.stringify({ amount: '5.00' })  // Adjust amount as needed
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//               return data.paymentID;  // Return the PayPal payment ID
 //             });
-//             const response = await processPayment({ payment_method_id: paymentMethod.id });
-//             console.log(response.data);
-//         } catch (error) {
-//             console.error(error);
-//         }
-//     };
-
-//     return (
-//         <form onSubmit={handleSubmit}>
-//             <CardElement />
-//             <button type="submit">Pay</button>
-//         </form>
-//     );
+//           }}
+//           onApprove={(data, actions) => {
+//             return fetch(`http://localhost:5000/api/payment/execute?paymentId=${data.paymentID}&PayerID=${data.payerID}`, {
+//               method: 'GET',
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//               if (data.message === 'Payment successful') {
+//                 // Handle successful payment (e.g., show a message to the user)
+//               } else {
+//                 // Handle payment error
+//               }
+//             });
+//           }}
+//         />
+//       </PayPalScriptProvider>
+//     </div>
+//   );
 // };
 
 // export default PaymentForm;
 
-// src/components/PaymentForm.js
+
+
 import React from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
@@ -40,38 +54,65 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 const PAYPAL_CLIENT_ID = 'AbS4ilAHZC7R97S_E1wKuJl7XpgYI7sNln9srjpQSUaAkTtu4dA3soRdWICuHbsalROz4dkWbT21m93U';
 
 const PaymentForm = () => {
+  // Define inline styles
+  const styles = {
+    container: {
+      maxWidth: '600px',
+      margin: '0 auto',
+      padding: '20px',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      backgroundColor: '#f9f9f9',
+      textAlign: 'center'
+    },
+    header: {
+      marginBottom: '20px',
+      color: '#333',
+      fontSize: '24px'
+    },
+    buttonContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: '20px'
+    }
+  };
+
   return (
-    <div>
-      <h2>Pay with PayPal</h2>
+    <div style={styles.container}>
+      <h2 style={styles.header}>Pay with PayPal</h2>
       <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID }}>
-        <PayPalButtons
-          createOrder={(data, actions) => {
-            return fetch('http://localhost:5000/api/pay', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ amount: '5.00' })  // Adjust amount as needed
-            })
-            .then(response => response.json())
-            .then(data => {
-              return data.paymentID;  // Return the PayPal payment ID
-            });
-          }}
-          onApprove={(data, actions) => {
-            return fetch(`http://localhost:5000/api/payment/execute?paymentId=${data.paymentID}&PayerID=${data.payerID}`, {
-              method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.message === 'Payment successful') {
-                // Handle successful payment (e.g., show a message to the user)
-              } else {
-                // Handle payment error
-              }
-            });
-          }}
-        />
+        <div style={styles.buttonContainer}>
+          <PayPalButtons
+            createOrder={(data, actions) => {
+              return fetch('http://localhost:5000/api/pay', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: '5.00' })  // Adjust amount as needed
+              })
+              .then(response => response.json())
+              .then(data => {
+                return data.paymentID;  // Return the PayPal payment ID
+              });
+            }}
+            onApprove={(data, actions) => {
+              return fetch(`http://localhost:5000/api/payment/execute?paymentId=${data.paymentID}&PayerID=${data.payerID}`, {
+                method: 'GET',
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.message === 'Payment successful') {
+                  // Handle successful payment (e.g., show a message to the user)
+                } else {
+                  // Handle payment error
+                }
+              });
+            }}
+          />
+        </div>
       </PayPalScriptProvider>
     </div>
   );
